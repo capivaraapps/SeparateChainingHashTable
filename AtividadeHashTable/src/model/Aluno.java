@@ -15,19 +15,13 @@ public class Aluno implements Hashable {
     private String nome;
     private String matricula;
         
-    public int hash(int tableSize) {
-        // utiliza a função hashcode da classe String return
-        return matricula.hashCode()%tableSize;
+    public Aluno (String nome, String matricula){
+        this.nome = nome;
+        this.matricula = matricula;
     }
-    @Override
-    public boolean equals(Object o) {
-        try{
-            return this.matricula.equals(((Aluno)o).matricula) ;
-        }catch(Exception e){
-            System.err.println("Não pode comparar a classe " + o.getClass().getName() + " com a classe Aluno");
-        }
-        return false;
-    } 
+    public int hash(int tableSize) {
+        return Math.abs(matricula.hashCode()%tableSize);
+    }
     @Override
     public String getKey(){
         return matricula;
@@ -46,6 +40,6 @@ public class Aluno implements Hashable {
     }
     @Override
     public String toString(){
-        return this.matricula + "\t" + this.nome;
+        return this.matricula + "  " + this.nome;
     }
 }

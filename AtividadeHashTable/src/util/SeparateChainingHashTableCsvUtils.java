@@ -11,6 +11,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import model.Aluno;
+import java.io.File;
 
 /**
  *
@@ -18,43 +20,43 @@ import java.lang.reflect.Constructor;
  */
 public class SeparateChainingHashTableCsvUtils {
     
-    public static <T> SeparateChainingHashTable csvToHashTable(String file, 
-            SeparateChainingHashTable ht, 
+    public static SeparateChainingHashTable csvToHashTable(String file, 
             String delimiter, 
             boolean primeiraLinha,
-            Class classe){
+            int fator){
+        
+        int size = 100/fator;
+        size = nextPrime(size);
+               
+        SeparateChainingHashTable ht = new SeparateChainingHashTable(size);
             
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-
-            if(!Hashable.class.isAssignableFrom(classe)){
-                System.err.println("A classe " + classe.getName() + " não é Hashable");
-                return null;
-            }
 
             String line;
             boolean first = primeiraLinha;
             while ((line = br.readLine()) != null) {
-                if(first) first = false;
-                String[] values = line.split(delimiter);
-                
-                if(values.length > 2){
-                    System.err.println("O arquivo CSV só pode conter duas colunas ('key' e 'value').");
-                    return null;
+                if(first){
+                    first = false;
+                }else{
+                    String[] values = line.split(delimiter);
+
+                    if(values.length > 2){
+                        System.err.println("O arquivo CSV só pode conter duas colunas ('key' e 'value').");
+                        return null;
+                    }else{
+                        ht.insert(new Aluno(values[0],values[1]));
+                    }
                 }
-                                
-                ht.insert((T));
             }
         }catch(IOException e){
             System.err.println("O arquivo não pode ser lido.");
-        }catch(ClassNotFoundException e){
-            System.err.println("Sua classe não tem construtor :(");
         }
         return ht;
     }
     
     public static int nextPrime(int number) {
         if(!isPrime(number))
-            number = nextPrime(number++);
+            number = nextPrime(number+1);
         return number;
     }
     
@@ -62,5 +64,8 @@ public class SeparateChainingHashTableCsvUtils {
         for(int i=2; i<=Math.sqrt(number); i++)
             if(number%i == 0) return false;
         return true;
+    }
+    public static int keyHash(String key, int tableSize){
+        return Math.abs(key.hashCode()%tableSize);    
     }
 }
